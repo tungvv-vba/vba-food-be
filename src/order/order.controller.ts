@@ -13,6 +13,8 @@ import {
 } from "@nestjs/common";
 import { OrderDto } from "./dtos/order.dto";
 import { OrderService } from "./order.service";
+import { currentUser } from "src/user/decorator/currentUser.decorator";
+import { UserEntity } from "src/user/entities/user.entity";
 
 @Controller("order")
 @UseInterceptors(ClassSerializerInterceptor)
@@ -23,7 +25,6 @@ export class OrderController {
   findAll(@Query("date") date: string) {
     const startDate = new Date(date);
     startDate.setHours(0, 0, 0, 0);
-
     const endDate = new Date(date);
     endDate.setHours(23, 59, 59, 999);
 
@@ -36,8 +37,8 @@ export class OrderController {
   }
 
   @Post()
-  create(@Body() body: OrderDto, @Req() req) {
-    return this.orderService.create(body, req.user.sub);
+  create(@Body() body: OrderDto, @currentUser() currentUser: UserEntity) {
+    return this.orderService.create(body, currentUser);
   }
 
   @Put("/:id")
