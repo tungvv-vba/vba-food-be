@@ -1,4 +1,4 @@
-import { Exclude } from "class-transformer";
+import { Exclude, Transform } from "class-transformer";
 import { UserEntity } from "src/user/entities/user.entity";
 import {
   Column,
@@ -35,9 +35,10 @@ export class OrderEntity {
   deletedAt: Date;
 
   @Column()
-  user_id: number;
+  userId: number;
 
   @ManyToOne(() => UserEntity, (user) => user.orders)
-  @JoinColumn({ name: "user_id" })
+  @JoinColumn({ name: "userId" })
+  @Transform(({ value }) => value.fullName)
   user: UserEntity;
 }

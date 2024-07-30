@@ -8,12 +8,11 @@ import {
   Post,
   Put,
   Query,
-  Req,
   UseInterceptors,
 } from "@nestjs/common";
 import { OrderDto } from "./dtos/order.dto";
 import { OrderService } from "./order.service";
-import { currentUser } from "src/user/decorator/currentUser.decorator";
+import { CurrentUser } from "src/user/decorator/currentUser.decorator";
 import { UserEntity } from "src/user/entities/user.entity";
 
 @Controller("order")
@@ -31,13 +30,18 @@ export class OrderController {
     return this.orderService.findAll(startDate, endDate);
   }
 
-  @Get("/:id")
+  @Get("/report")
+  getReport(@CurrentUser() currentUser: UserEntity) {
+    return this.orderService.findByUserId(currentUser.id);
+  }
+
+  @Get(":id")
   findOne(@Param("id") id: number) {
     return this.orderService.findOne(id);
   }
 
   @Post()
-  create(@Body() body: OrderDto, @currentUser() currentUser: UserEntity) {
+  create(@Body() body: OrderDto, @CurrentUser() currentUser: UserEntity) {
     return this.orderService.create(body, currentUser);
   }
 
@@ -49,10 +53,5 @@ export class OrderController {
   @Delete("/:id")
   delete(@Param("id") id: number) {
     return this.orderService.delete(id);
-  }
-
-  @Get("/report")
-  getReport() {
-    return this.orderService.findByUserId(2);
   }
 }
