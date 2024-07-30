@@ -7,5 +7,5 @@ export class ChangePasswordDto {
 
   @IsString()
   @IsNotEmpty()
-  oldpassword: string;
+  oldPassword: string;
 }
