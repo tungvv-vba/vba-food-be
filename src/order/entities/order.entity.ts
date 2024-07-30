@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -14,9 +15,6 @@ import {
 export class OrderEntity {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column()
-  userId: number;
 
   @Column()
   price: number;
@@ -36,6 +34,10 @@ export class OrderEntity {
   @DeleteDateColumn()
   deletedAt: Date;
 
+  @Column()
+  user_id: number;
+
   @ManyToOne(() => UserEntity, (user) => user.orders)
+  @JoinColumn({ name: "user_id" })
   user: UserEntity;
 }

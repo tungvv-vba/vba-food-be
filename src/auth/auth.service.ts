@@ -46,5 +46,8 @@ export class AuthService {
     body.password = hashedPassword;
 
     await this.userService.create(body);
+    return {
+      msg: "Đăng ký thành công",
+    };
   }
 }
