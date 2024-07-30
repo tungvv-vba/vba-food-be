@@ -23,7 +23,7 @@ export class UserRegisterDto {
   @MinLength(6, {
     message: "Họ tên tối thiểu 2 ký tự",
   })
-  fullName: string;
+  fullname: string;
 
   role: ERole;
 }
