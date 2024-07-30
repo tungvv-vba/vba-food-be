@@ -49,7 +49,7 @@ export class OrderService {
     });
 
     return {
-      orders: orders.slice(0, 10),
+      orders: orders.slice(0, 7),
       total: this.totalPrice(orders),
       count,
     };
