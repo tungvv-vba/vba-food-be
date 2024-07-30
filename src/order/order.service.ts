@@ -27,8 +27,7 @@ export class OrderService {
 
   async create(requestBody: OrderDto, currentUser: UserEntity) {
     const order = this.orderRepository.create(requestBody);
-    console.log(currentUser);
-    order.user_id = currentUser.id;
+    order.userId = currentUser.id;
     return this.orderRepository.save(order);
   }
   update(id: number, newOrder: OrderDto) {
@@ -39,7 +38,20 @@ export class OrderService {
     return this.orderRepository.softDelete(id);
   }
 
+  totalPrice(orders: OrderEntity[]) {
+    return orders.reduce((total, order) => total + order.price, 0);
+  }
+
   async findByUserId(userId: number) {
-    return 1;
+    const [orders, count] = await this.orderRepository.findAndCount({
+      where: { userId },
+      relations: { user: true },
+    });
+
+    return {
+      orders: orders.slice(0, 7),
+      total: this.totalPrice(orders),
+      count,
+    };
   }
 }

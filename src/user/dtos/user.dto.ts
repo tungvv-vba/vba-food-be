@@ -20,7 +20,7 @@ export class UserRegisterDto {
   password: string;
 
   @IsNotEmpty()
-  @MinLength(6, {
+  @MinLength(2, {
     message: "Họ tên tối thiểu 2 ký tự",
   })
   fullName: string;
