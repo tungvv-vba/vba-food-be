@@ -1,10 +1,20 @@
-import { Controller, Delete, Get, Post, Query, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import {
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Query,
+  UploadedFiles,
+  UseInterceptors,
+} from "@nestjs/common";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
 import { MenuImageService } from "./menu-image.service";
+import { ApiTags } from "@nestjs/swagger";
 
 @Controller("menu-image")
+@ApiTags("menu-image")
 export class MenuImageController {
   constructor(private menuImageService: MenuImageService) {}
 

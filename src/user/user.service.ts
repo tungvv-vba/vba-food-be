@@ -1,8 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "./entities/user.entity";
 import { Repository } from "typeorm";
 import { UserRegisterDto } from "./dtos/user.dto";
+import { ChangePasswordDto } from "./dtos/change-password.dto";
+import { comparePasswordHash, hashPassword } from "src/utils/password.util";
 
 @Injectable()
 export class UserService {
@@ -29,5 +31,22 @@ export class UserService {
 
   delete(id: string) {
     return this.userRepository.softDelete(id);
+  }
+
+  async changePassword(request: ChangePasswordDto, currentUser: UserEntity) {
+    const { password, oldPassword } = request;
+    const user = await this.findOne(currentUser.username);
+    if (!user) throw new NotFoundException("Không tìm thấy user");
+    const isPasswordValid = await comparePasswordHash(oldPassword, user.password);
+    if (!isPasswordValid) throw new BadRequestException("Mật khẩu cũ không đúng");
+    const hashPasswords = await hashPassword(password);
+    await this.userRepository.save({
+      ...user,
+      hashPasswords,
+    });
+    return {
+      success: true,
+      message: "Đổi mật khẩu thành công",
+    };
   }
 }

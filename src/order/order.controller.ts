@@ -14,8 +14,10 @@ import { OrderDto } from "./dtos/order.dto";
 import { OrderService } from "./order.service";
 import { CurrentUser } from "src/user/decorator/currentUser.decorator";
 import { UserEntity } from "src/user/entities/user.entity";
+import { ApiTags } from "@nestjs/swagger";
 
 @Controller("order")
+@ApiTags("order")
 @UseInterceptors(ClassSerializerInterceptor)
 export class OrderController {
   constructor(private orderService: OrderService) {}
