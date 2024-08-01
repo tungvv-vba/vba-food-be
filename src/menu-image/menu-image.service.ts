@@ -1,9 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { MenuImageEntity } from "./entities/menu-image.entity";
 import { Repository } from "typeorm";
 import { promises as fsPromises } from "fs";
 import { join } from "path";
+import axios from "axios";
 
 @Injectable()
 export class MenuImageService {
@@ -19,11 +20,12 @@ export class MenuImageService {
     return this.menuImageRepository.findOneBy({ id });
   }
 
-  create(files: Array<Express.Multer.File>) {
+  async create(files: Array<Express.Multer.File>) {
     const menuImages = files.map((file) => {
       return this.menuImageRepository.create({ url: file.path });
     });
-
+    const message = `Đã có món mới hôm nay`;
+    await this.sendNotifyToTelegram(message);
     return this.menuImageRepository.save(menuImages);
   }
 
@@ -43,6 +45,21 @@ export class MenuImageService {
       return { message: "File deleted successfully" };
     } catch (err) {
       throw new Error("Error deleting file");
+    }
+  }
+
+  async sendNotifyToTelegram(message: any) {
+    const url = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
+    const payload = {
+      chat_id: process.env.TELEGRAM_CHAT_ID,
+      text: message,
+    };
+    try {
+      await axios.post(url, payload);
+      return "Gửi thông báo thành công";
+    } catch (error) {
+      // console.log(error);
+      throw new BadRequestException("Lỗi khi gửi thông báo");
     }
   }
 }
