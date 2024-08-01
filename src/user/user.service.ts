@@ -39,10 +39,10 @@ export class UserService {
     if (!user) throw new NotFoundException("Không tìm thấy user");
     const isPasswordValid = await comparePasswordHash(oldPassword, user.password);
     if (!isPasswordValid) throw new BadRequestException("Mật khẩu cũ không đúng");
-    const hashPasswords = await hashPassword(password);
+    const newPassword = await hashPassword(password);
     await this.userRepository.save({
       ...user,
-      hashPasswords,
+      password: newPassword,
     });
     return {
       success: true,
