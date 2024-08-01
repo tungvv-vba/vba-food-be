@@ -24,7 +24,7 @@ export class MenuImageService {
     const menuImages = files.map((file) => {
       return this.menuImageRepository.create({ url: file.path });
     });
-    const message = `Đã có món mới hôm nay`;
+    const message = `Đã có món mới hôm nay, vào đặt cơm bạn nhé!`;
     await this.sendNotifyToTelegram(message);
     return this.menuImageRepository.save(menuImages);
   }
@@ -48,7 +48,7 @@ export class MenuImageService {
     }
   }
 
-  async sendNotifyToTelegram(message: any) {
+  async sendNotifyToTelegram(message: string) {
     const url = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
     const payload = {
       chat_id: process.env.TELEGRAM_CHAT_ID,
@@ -58,7 +58,6 @@ export class MenuImageService {
       await axios.post(url, payload);
       return "Gửi thông báo thành công";
     } catch (error) {
-      // console.log(error);
       throw new BadRequestException("Lỗi khi gửi thông báo");
     }
   }
