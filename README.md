@@ -1,7 +1,7 @@
 <p align="center">
   <a href="https://vbatechs.com/" target="blank"><img src="./photo.jpg" width="300" alt="Nest Logo" /></a>
 </p>
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">SOFTWARE ENGINEERING/DIGITAL TRANSFORMATION</p>
     <p align="center">
 </p>
 
