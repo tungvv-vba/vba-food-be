@@ -34,7 +34,10 @@ export class UserService {
   }
 
   async changePassword(request: ChangePasswordDto, currentUser: UserEntity) {
-    const { password, oldPassword } = request;
+    const { password, cfPassword, oldPassword } = request;
+    if (password !== cfPassword) {
+      throw new BadRequestException("Mật khẩu mới và xác nhận mật khẩu không khớp");
+    }
     const user = await this.findOne(currentUser.username);
     if (!user) throw new NotFoundException("Không tìm thấy user");
     const isPasswordValid = await comparePasswordHash(oldPassword, user.password);
@@ -42,7 +45,7 @@ export class UserService {
     const hashPasswords = await hashPassword(password);
     await this.userRepository.save({
       ...user,
-      hashPasswords,
+      password: hashPasswords,
     });
     return {
       success: true,
