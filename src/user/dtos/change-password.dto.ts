@@ -10,5 +10,10 @@ export class ChangePasswordDto {
   @ApiProperty({ required: true })
   @IsString()
   @IsNotEmpty()
+  cfPassword: string;
+
+  @ApiProperty({ required: true })
+  @IsString()
+  @IsNotEmpty()
   oldPassword: string;
 }

@@ -34,7 +34,8 @@ export class UserService {
   }
 
   async changePassword(request: ChangePasswordDto, currentUser: UserEntity) {
-    const { password, oldPassword } = request;
+    const { password, cfPassword, oldPassword } = request;
+    if (password !== cfPassword) throw new BadRequestException("Mật khẩu xác nhận không khớp");
     const user = await this.findOne(currentUser.username);
     if (!user) throw new NotFoundException("Không tìm thấy user");
     const isPasswordValid = await comparePasswordHash(oldPassword, user.password);
