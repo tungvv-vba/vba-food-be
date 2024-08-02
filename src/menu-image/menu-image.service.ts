@@ -29,7 +29,11 @@ export class MenuImageService {
     return this.menuImageRepository.save(menuImages);
   }
 
-  async delete(ids: number[]) {
+  async delete({ ids, isOff }: { ids: number[]; isOff: boolean }) {
+    if (isOff) {
+      const message = `Thông báo: hôm nay quán cơm nghỉ nhé mọi người ~~`;
+      await this.sendNotifyToTelegram(message);
+    }
     for (const id of ids) {
       const { url } = await this.findOne(id);
       await this.deleteFile(url);
