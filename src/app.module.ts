@@ -13,6 +13,7 @@ import { APP_GUARD } from "@nestjs/core";
 import { AuthGuard } from "./guards/auth.guard";
 import { OrderEntity } from "./order/entities/order.entity";
 import { MenuImageEntity } from "./menu-image/entities/menu-image.entity";
+import { NotifyModule } from './notify/notify.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { MenuImageEntity } from "./menu-image/entities/menu-image.entity";
     OrderModule,
     MenuImageModule,
     AuthModule,
+    NotifyModule,
   ],
   controllers: [AppController],
   providers: [

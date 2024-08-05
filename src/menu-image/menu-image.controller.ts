@@ -42,7 +42,7 @@ export class MenuImageController {
   }
 
   @Delete()
-  deleteFiles(@Query() query: { ids: number[]; isOff: boolean }) {
-    return this.menuImageService.delete(query);
+  deleteFiles(@Query("ids") ids: number[]) {
+    return this.menuImageService.delete(ids);
   }
 }
