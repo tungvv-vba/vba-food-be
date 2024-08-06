@@ -23,13 +23,20 @@ export class BotTeleService {
       if (text) {
         try {
           const botResponse = await this.getResponse(text);
+          console.log(botResponse);
           const badWords = ["ngu", "óc", "chó", "đm", "địt", "cặc", "lồn", "đéo"];
           const hiwords = ["hi", "hello", "chào", "xin chào", "helo", "2"];
+          const arrAnimationBad = [
+            "CAACAgUAAxkBAAICBGaxmTM5pVq3ZtDKKrguateqJH3kAAIMAAPsOSEfPu0HqTWDQHc1BA",
+            "CgACAgQAAxkBAAMdZrHtCr4c5wwQ2RIM04VEKjJFKowAAgwDAAKyQAxTZn3wIGfbZU01BA",
+            "CgACAgQAAxkBAAMeZrHtO_up5ux4edTQ9yGgosLL3acAAggDAALVGw1TJYtdAbytVN01BA",
+            "CAACAgUAAxkBAAMfZrHtTiYkU74f563poSyj6I4oDF0AAicEAAKp8JBVgB5-8nvYGdQ1BA",
+          ];
 
           if (badWords?.some((word) => text.includes(word))) {
             await this.bot.sendAnimation(
               chatId,
-              "CAACAgUAAxkBAAICBGaxmTM5pVq3ZtDKKrguateqJH3kAAIMAAPsOSEfPu0HqTWDQHc1BA",
+              arrAnimationBad[Math.floor(Math.random() * arrAnimationBad.length)],
             );
           } else if (hiwords?.some((word) => text.includes(word))) {
             await this.bot.sendAnimation(
