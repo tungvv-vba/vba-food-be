@@ -3,8 +3,6 @@ import { Injectable, Logger } from "@nestjs/common";
 import * as TelegramBot from "node-telegram-bot-api";
 import OpenAI from "openai";
 
-const telegramToken = "7442551136:AAEqsHsZHHywSb5VYc-F_GDfnR3HbDmTHnk";
-
 @Injectable()
 export class BotTeleService {
   private bot: TelegramBot;
@@ -12,7 +10,7 @@ export class BotTeleService {
   private readonly logger = new Logger(BotTeleService.name);
 
   constructor() {
-    this.bot = new TelegramBot(telegramToken, { polling: true });
+    this.bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
@@ -25,14 +23,21 @@ export class BotTeleService {
       if (text) {
         try {
           const botResponse = await this.getResponse(text);
-          await this.sendMessage(chatId, botResponse);
           const badWords = ["ngu", "óc", "chó", "đm", "địt", "cặc", "lồn", "đéo"];
+          const hiwords = ["hi", "hello", "chào", "xin chào", "helo", "2"];
 
-          if (badWords.some((word) => text.includes(word))) {
+          if (badWords?.some((word) => text.includes(word))) {
             await this.bot.sendAnimation(
               chatId,
               "CAACAgUAAxkBAAICBGaxmTM5pVq3ZtDKKrguateqJH3kAAIMAAPsOSEfPu0HqTWDQHc1BA",
             );
+          } else if (hiwords?.some((word) => text.includes(word))) {
+            await this.bot.sendAnimation(
+              chatId,
+              "CgACAgQAAxkBAAICVGaxopYAAQdIho009KJC5JVAQhKZTgAC8AIAArZOHVMprmnOBgTJxTUE",
+            );
+          } else {
+            await this.sendMessage(chatId, botResponse);
           }
         } catch (error) {
           this.logger.error("Error responding to message:", error);
