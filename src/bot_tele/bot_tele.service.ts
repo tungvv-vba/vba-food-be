@@ -1,4 +1,3 @@
-// src/bot_tele/bot_tele.service.ts
 import { Injectable, Logger } from "@nestjs/common";
 import * as TelegramBot from "node-telegram-bot-api";
 import OpenAI from "openai";

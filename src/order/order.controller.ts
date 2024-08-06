@@ -10,7 +10,7 @@ import {
   Query,
   UseInterceptors,
 } from "@nestjs/common";
-import { OrderDto } from "./dtos/order.dto";
+import { CreateOrderDto, FindOrderDto, UpdateOrderDto } from "./dtos/order.dto";
 import { OrderService } from "./order.service";
 import { CurrentUser } from "src/user/decorator/currentUser.decorator";
 import { UserEntity } from "src/user/entities/user.entity";
@@ -23,13 +23,8 @@ export class OrderController {
   constructor(private orderService: OrderService) {}
 
   @Get("/")
-  findAll(@Query("date") date: string) {
-    const startDate = new Date(date);
-    startDate.setHours(0, 0, 0, 0);
-    const endDate = new Date(date);
-    endDate.setHours(23, 59, 59, 999);
-
-    return this.orderService.findAll(startDate, endDate);
+  findAll(@Query() query: FindOrderDto) {
+    return this.orderService.findAll(query);
   }
 
   @Get("/report")
@@ -43,12 +38,17 @@ export class OrderController {
   }
 
   @Post()
-  create(@Body() body: OrderDto, @CurrentUser() currentUser: UserEntity) {
+  create(@Body() body: CreateOrderDto, @CurrentUser() currentUser: UserEntity) {
     return this.orderService.create(body, currentUser);
   }
 
+  @Put("/paid")
+  updatePaid(@Query("ids") ids: number[]) {
+    return this.orderService.updatePaid(ids);
+  }
+
   @Put("/:id")
-  update(@Param("id") id: number, @Body() newOrder: OrderDto) {
+  update(@Param("id") id: number, @Body() newOrder: UpdateOrderDto) {
     return this.orderService.update(id, newOrder);
   }
 

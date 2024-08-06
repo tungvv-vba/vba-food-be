@@ -1,11 +1,13 @@
 import { BadRequestException, forwardRef, Inject, Injectable } from "@nestjs/common";
 import axios from "axios";
 import { MenuImageService } from "src/menu-image/menu-image.service";
+import { OrderService } from "src/order/order.service";
 
 @Injectable()
 export class NotifyService {
   constructor(
     @Inject(forwardRef(() => MenuImageService)) private menuImageService: MenuImageService,
+    @Inject(forwardRef(() => OrderService)) private orderService: OrderService,
   ) {}
 
   private telegramBotUrl = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
@@ -13,7 +15,9 @@ export class NotifyService {
   async sendNotificationToTelegram(message: string) {
     const payload = {
       chat_id: "-1002239636168", // this.chatId
+      // chat_id: this.chatId,
       text: message,
+      parse_mode: "Markdown",
     };
 
     try {
@@ -33,7 +37,11 @@ export class NotifyService {
   }
 
   async sendPaymentReminder() {
-    const message = `Anh em ơi, đừng quên\nNộp tiền cơm đúng hạn\nVí dù có khô cạn\nNhưng tình cảm còn đó\nNộp tiền cơm hôm nay\nĐể ngày mai no bụng💸\n\n0301000384746\nVietcombank\nVU VAN TUNG`;
+    const notPaidList = await this.orderService.getNotPaidList();
+    const notPaidString = notPaidList
+      .map((item) => `*💸 ${item.fullName} - ${item.totalPrice}K*`)
+      .join("\n");
+    const message = `*Các con nợ sau chưa thanh toán:*\n\n${notPaidString} \n\n💰__Quét QR Code:__ [ở đây](${process.env.PAYMENT_QR_URL})`;
     await this.sendNotificationToTelegram(message);
   }
 

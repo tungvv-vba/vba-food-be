@@ -41,4 +41,7 @@ export class OrderEntity {
   @JoinColumn({ name: "userId" })
   @Transform(({ value }) => value.fullName)
   user: UserEntity;
+
+  @Column({ default: false })
+  isPaid: boolean;
 }

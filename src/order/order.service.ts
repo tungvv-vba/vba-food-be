@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { OrderEntity } from "./entities/order.entity";
-import { Between, Repository } from "typeorm";
-import { OrderDto } from "./dtos/order.dto";
+import { Between, FindOptionsWhere, Repository } from "typeorm";
+import { CreateOrderDto, FindOrderDto, UpdateOrderDto } from "./dtos/order.dto";
 import { UserEntity } from "src/user/entities/user.entity";
 
 @Injectable()
@@ -12,9 +12,19 @@ export class OrderService {
     private readonly orderRepository: Repository<OrderEntity>,
   ) {}
 
-  findAll(startDate: Date, endDate: Date) {
+  findAll(query: FindOrderDto) {
+    const where: FindOptionsWhere<OrderEntity> = { isPaid: query.isPaid };
+    if (query.date) {
+      const startDate = new Date(query.date);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(query.date);
+      endDate.setHours(23, 59, 59, 999);
+
+      where.createdAt = Between(startDate, endDate);
+    }
+
     return this.orderRepository.find({
-      where: { updatedAt: Between(startDate, endDate) },
+      where,
       relations: {
         user: true,
       },
@@ -25,12 +35,13 @@ export class OrderService {
     return this.orderRepository.findOneBy({ id });
   }
 
-  async create(requestBody: OrderDto, currentUser: UserEntity) {
+  async create(requestBody: CreateOrderDto, currentUser: UserEntity) {
     const order = this.orderRepository.create(requestBody);
     order.userId = currentUser.id;
     return this.orderRepository.save(order);
   }
-  update(id: number, newOrder: OrderDto) {
+
+  update(id: number, newOrder: UpdateOrderDto) {
     return this.orderRepository.update(id, newOrder);
   }
 
@@ -52,6 +63,26 @@ export class OrderService {
       orders: orders.slice(0, 7).reverse(),
       total: this.totalPrice(orders),
       count,
+      notPaid: this.totalPrice(orders.filter((order) => !order.isPaid)),
     };
+  }
+
+  updatePaid(ids: number[]) {
+    return this.orderRepository.update(ids, { isPaid: true });
+  }
+
+  async getNotPaidList() {
+    const notPaidList = await this.orderRepository
+      .createQueryBuilder("order")
+      .select("order.userId", "userId")
+      .addSelect("user.fullName", "fullName")
+      .addSelect("SUM(order.price)", "totalPrice")
+      .leftJoin("order.user", "user")
+      .where("order.isPaid = :isPaid", { isPaid: false })
+      .groupBy("order.userId")
+      .addGroupBy("user.fullName")
+      .getRawMany();
+
+    return notPaidList;
   }
 }
