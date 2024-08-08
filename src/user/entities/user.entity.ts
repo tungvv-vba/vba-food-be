@@ -38,6 +38,9 @@ export class UserEntity extends BaseEntity {
   })
   role: string;
 
+  @Column()
+  avatar?: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
