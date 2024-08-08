@@ -9,12 +9,13 @@ import { JwtModule } from "@nestjs/jwt";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserEntity } from "./user/entities/user.entity";
 import { ConfigModule } from "@nestjs/config";
-import { APP_GUARD } from "@nestjs/core";
+import { APP_FILTER, APP_GUARD } from "@nestjs/core";
 import { AuthGuard } from "./guards/auth.guard";
 import { OrderEntity } from "./order/entities/order.entity";
 import { MenuImageEntity } from "./menu-image/entities/menu-image.entity";
 import { NotifyModule } from "./notify/notify.module";
 import { BotTeleModule } from "./bot_tele/bot_tele.module";
+import { GlobalExceptionFilter } from "./shared/filter/global-exception.filter";
 
 @Module({
   imports: [
@@ -50,6 +51,10 @@ import { BotTeleModule } from "./bot_tele/bot_tele.module";
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
     },
   ],
 })
