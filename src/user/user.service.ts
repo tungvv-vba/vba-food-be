@@ -1,16 +1,20 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { HttpService } from "@nestjs/axios";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "./entities/user.entity";
 import { Repository } from "typeorm";
 import { UserRegisterDto } from "./dtos/user.dto";
 import { ChangePasswordDto } from "./dtos/change-password.dto";
 import { comparePasswordHash, hashPassword } from "src/utils/password.util";
+import { lastValueFrom } from "rxjs";
+import * as FormData from "form-data";
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
+    private httpService: HttpService,
   ) {}
 
   findAll() {
@@ -48,5 +52,20 @@ export class UserService {
       success: true,
       message: "Đổi mật khẩu thành công",
     };
+  }
+  async uploadFile(file: Express.Multer.File, currentUser: UserEntity): Promise<string> {
+    const formData = new FormData();
+    formData.append("image", file.buffer.toString("base64"));
+    formData.append("key", process.env.IMGBB_API_KEY);
+
+    const headers = {
+      ...formData.getHeaders(),
+    };
+
+    const response = await lastValueFrom(
+      this.httpService.post("https://api.imgbb.com/1/upload", formData, { headers }),
+    );
+    await this.userRepository.update({ id: currentUser.id }, { avatar: response.data.data.url });
+    return response.data.data.url;
   }
 }
