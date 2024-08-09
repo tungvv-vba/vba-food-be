@@ -16,13 +16,7 @@ export class MenuImageService {
   ) {}
 
   async findAll() {
-    const images = await this.menuImageRepository.find();
-    const data = await Promise.all(
-      images.map(async (image) => ({
-        id: image.id,
-        url: image.url,
-      })),
-    );
+    const data = await this.menuImageRepository.find();
     return { data };
   }
 
