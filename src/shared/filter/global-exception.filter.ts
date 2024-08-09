@@ -10,8 +10,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    let statusCode = exception.response.code || HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = exception.response.message || "Internal server error";
+    let statusCode = exception.response?.code || HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = exception.response?.message || "Internal server error";
 
     this.logger.error({ message: exception.message, stack: exception.stack });
 

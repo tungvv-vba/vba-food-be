@@ -30,8 +30,6 @@ export class AuthService {
         accessToken,
       };
     }
-
-    throw badRequest;
   }
 
   async register(body: UserRegisterDto) {

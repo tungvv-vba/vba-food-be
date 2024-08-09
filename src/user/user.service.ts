@@ -5,9 +5,9 @@ import { UserEntity } from "./entities/user.entity";
 import { Repository } from "typeorm";
 import { UserRegisterDto } from "./dtos/user.dto";
 import { ChangePasswordDto } from "./dtos/change-password.dto";
-import { comparePasswordHash, hashPassword } from "src/utils/password.util";
 import { lastValueFrom } from "rxjs";
 import * as FormData from "form-data";
+import { comparePasswordHash, hashPassword } from "src/shared/utils/password.util";
 
 @Injectable()
 export class UserService {

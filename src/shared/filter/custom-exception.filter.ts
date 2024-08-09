@@ -19,7 +19,6 @@ export class CustomExceptionFiler implements ExceptionFilter {
       statusCode: exception.statusCode,
       timestamp: new Date().toISOString(),
     };
-    console.log(errorBody);
     response.status(exception.statusCode).json(errorBody);
   }
 }
