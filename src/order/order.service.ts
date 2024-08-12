@@ -12,7 +12,7 @@ export class OrderService {
     private readonly orderRepository: Repository<OrderEntity>,
   ) {}
 
-  findAll(query: FindOrderDto) {
+  async findAll(query: FindOrderDto) {
     const where: FindOptionsWhere<OrderEntity> = { isPaid: query.isPaid };
     if (query.date) {
       const startDate = new Date(query.date);
@@ -23,12 +23,14 @@ export class OrderService {
       where.createdAt = Between(startDate, endDate);
     }
 
-    return this.orderRepository.find({
+    const data = await this.orderRepository.find({
       where,
       relations: {
         user: true,
       },
     });
+
+    return { data };
   }
 
   findOne(id: number) {

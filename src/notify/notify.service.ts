@@ -32,7 +32,7 @@ export class NotifyService {
     const message = `Thông báo: hôm nay quán cơm nghỉ nhé mọi người ~~`;
     await this.sendNotificationToTelegram(message);
     const menuImages = await this.menuImageService.findAll();
-    const menuImageIds = menuImages.map((menuImage) => menuImage.id);
+    const menuImageIds = menuImages.data.map((menuImage) => menuImage.id);
     await this.menuImageService.delete(menuImageIds);
   }
 

@@ -10,16 +10,15 @@ export class CustomExceptionFiler implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
 
     this.logger.error({
-      message: exception.response.message,
-      code: exception.response.code,
+      message: exception.error.message,
+      code: exception.error.code,
     });
 
     const errorBody = {
-      error: exception.response.message,
+      error: exception.error,
       statusCode: exception.statusCode,
       timestamp: new Date().toISOString(),
     };
-    console.log(errorBody);
     response.status(exception.statusCode).json(errorBody);
   }
 }

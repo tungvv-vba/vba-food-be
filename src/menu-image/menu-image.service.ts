@@ -5,6 +5,8 @@ import { Repository } from "typeorm";
 import { promises as fsPromises } from "fs";
 import { join } from "path";
 import { NotifyService } from "src/notify/notify.service";
+import { IPageResponse } from "./interface/IPageResponse";
+import { OrderEntity } from "src/order/entities/order.entity";
 
 @Injectable()
 export class MenuImageService {
@@ -13,8 +15,9 @@ export class MenuImageService {
     private notifyService: NotifyService,
   ) {}
 
-  findAll() {
-    return this.menuImageRepository.find();
+  async findAll() {
+    const data = await this.menuImageRepository.find();
+    return { data };
   }
 
   async findOne(id: number) {
