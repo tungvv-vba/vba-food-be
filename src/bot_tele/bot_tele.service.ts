@@ -13,25 +13,22 @@ export class BotTeleService {
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
-
     this.bot.on("message", async (msg) => {
       console.log(msg);
       const chatId = msg.chat.id;
       const text = msg.text;
-
       if (text) {
         try {
           const botResponse = await this.getResponse(text);
           console.log(botResponse);
           const badWords = ["ngu", "óc", "chó", "đm", "địt", "cặc", "lồn", "đéo"];
-          const hiwords = ["hi", "hello", "chào", "xin chào", "helo", "2"];
+          const hiwords = ["hello", "chào", "xin chào", "helo"];
           const arrAnimationBad = [
             "CAACAgUAAxkBAAICBGaxmTM5pVq3ZtDKKrguateqJH3kAAIMAAPsOSEfPu0HqTWDQHc1BA",
             "CgACAgQAAxkBAAMdZrHtCr4c5wwQ2RIM04VEKjJFKowAAgwDAAKyQAxTZn3wIGfbZU01BA",
             "CgACAgQAAxkBAAMeZrHtO_up5ux4edTQ9yGgosLL3acAAggDAALVGw1TJYtdAbytVN01BA",
             "CAACAgUAAxkBAAMfZrHtTiYkU74f563poSyj6I4oDF0AAicEAAKp8JBVgB5-8nvYGdQ1BA",
           ];
-
           if (badWords?.some((word) => text.includes(word))) {
             await this.bot.sendAnimation(
               chatId,
@@ -40,7 +37,7 @@ export class BotTeleService {
           } else if (hiwords?.some((word) => text.includes(word))) {
             await this.bot.sendAnimation(
               chatId,
-              "CgACAgQAAxkBAAICVGaxopYAAQdIho009KJC5JVAQhKZTgAC8AIAArZOHVMprmnOBgTJxTUE",
+              "CAACAgQAAxkBAAIDKGa5kDEvdPqM-bNYmokKFZrxmIekAAKlEgAC8j5oUK6XKhg4oPDANQQ",
             );
           } else {
             await this.sendMessage(chatId, botResponse);
