@@ -62,7 +62,7 @@ export class OrderService {
     });
 
     return {
-      orders: orders.slice(0, 7).reverse(),
+      orders: orders.reverse().slice(0, 7),
       total: this.totalPrice(orders),
       count,
       notPaid: this.totalPrice(orders.filter((order) => !order.isPaid)),

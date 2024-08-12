@@ -14,8 +14,8 @@ export class NotifyService {
   private chatId = process.env.TELEGRAM_CHAT_ID;
   async sendNotificationToTelegram(message: string) {
     const payload = {
-      chat_id: "-1002239636168", // this.chatId
-      // chat_id: this.chatId,
+      // chat_id: "-1002239636168", // this.chatId
+      chat_id: this.chatId,
       text: message,
       parse_mode: "Markdown",
     };
