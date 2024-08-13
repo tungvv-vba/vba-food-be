@@ -11,6 +11,11 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
+export enum OrderOption {
+  Option1 = "ít cơm",
+  Option2 = "vừa cơm",
+  Option3 = "nhiều cơm",
+}
 @Entity({ name: "orders" })
 export class OrderEntity {
   @PrimaryGeneratedColumn()
@@ -36,6 +41,9 @@ export class OrderEntity {
 
   @Column()
   userId: number;
+
+  @Column({ type: "enum", enum: OrderOption, default: OrderOption.Option2 })
+  option: OrderOption;
 
   @ManyToOne(() => UserEntity, (user) => user.orders)
   @JoinColumn({ name: "userId" })

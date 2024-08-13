@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
+import { IsEnum, IsNotEmpty } from "class-validator";
+import { OrderOption } from "../entities/order.entity";
 
 export class CreateOrderDto {
   @ApiProperty({ required: true })
@@ -9,6 +10,11 @@ export class CreateOrderDto {
   @ApiProperty({ required: true })
   @IsNotEmpty()
   items: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEnum(OrderOption)
+  option: OrderOption;
 
   @ApiProperty({ required: false })
   isPaid: boolean;
