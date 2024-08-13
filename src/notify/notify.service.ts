@@ -10,7 +10,8 @@ export class NotifyService {
     @Inject(forwardRef(() => OrderService)) private orderService: OrderService,
   ) {}
 
-  private telegramBotUrl = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
+  private telegramBotUrlSendMs = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
+  private telegramBotUrlSendPhoto = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendPhoto`;
   private chatId = process.env.TELEGRAM_CHAT_ID;
   async sendNotificationToTelegram(message: string) {
     const payload = {
@@ -19,9 +20,23 @@ export class NotifyService {
       text: message,
       parse_mode: "Markdown",
     };
-
     try {
-      await axios.post(this.telegramBotUrl, payload);
+      await axios.post(this.telegramBotUrlSendMs, payload);
+      return "Gửi thông báo thành công";
+    } catch (error) {
+      throw new BadRequestException("Lỗi khi gửi thông báo");
+    }
+  }
+
+  async sendNotifiReminder(message: string) {
+    const payload = {
+      chat_id: this.chatId,
+      caption: message,
+      photo: process.env.PAYMENT_QR_URL,
+      parse_mode: "Markdown",
+    };
+    try {
+      await axios.post(this.telegramBotUrlSendPhoto, payload);
       return "Gửi thông báo thành công";
     } catch (error) {
       throw new BadRequestException("Lỗi khi gửi thông báo");
@@ -41,8 +56,8 @@ export class NotifyService {
     const notPaidString = notPaidList
       .map((item) => `*💸 ${item.fullName} - ${item.totalPrice}K*`)
       .join("\n");
-    const message = `*Các con nợ sau chưa thanh toán:*\n\n${notPaidString} \n\n💰__Quét QR Code:__ [ở đây](${process.env.PAYMENT_QR_URL})`;
-    await this.sendNotificationToTelegram(message);
+    const message = `*Các con nợ sau chưa thanh toán:*\n\n${notPaidString}`;
+    await this.sendNotifiReminder(message);
   }
 
   async notifyNewFood() {
