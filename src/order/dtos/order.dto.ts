@@ -12,6 +12,9 @@ export class CreateOrderDto {
 
   @ApiProperty({ required: false })
   isPaid: boolean;
+
+  @ApiProperty({ required: false })
+  riceOption: number;
 }
 
 export class UpdateOrderDto {
@@ -23,6 +26,9 @@ export class UpdateOrderDto {
 
   @ApiProperty({ required: false })
   isPaid: boolean;
+
+  @ApiProperty({ required: false })
+  riceOption: number;
 }
 
 export class FindOrderDto {

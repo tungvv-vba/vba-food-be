@@ -44,4 +44,7 @@ export class OrderEntity {
 
   @Column({ default: false })
   isPaid: boolean;
+
+  @Column({ default: 2 })
+  riceOption: number;
 }
