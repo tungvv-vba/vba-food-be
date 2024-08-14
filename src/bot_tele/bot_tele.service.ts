@@ -1,18 +1,31 @@
 import { Injectable, Logger } from "@nestjs/common";
 import * as TelegramBot from "node-telegram-bot-api";
 import OpenAI from "openai";
+import { google } from "googleapis";
 
 @Injectable()
 export class BotTeleService {
   private bot: TelegramBot;
   private openai: OpenAI;
   private readonly logger = new Logger(BotTeleService.name);
+  private docs: any;
 
   constructor() {
     this.bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
+
+    // Authenticate Google API
+    const auth = new google.auth.GoogleAuth({
+      keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+      scopes: [
+        "https://www.googleapis.com/auth/drive",
+        "https://www.googleapis.com/auth/documents",
+      ],
+    });
+    this.docs = google.docs({ version: "v1", auth });
+
     this.bot.on("message", async (msg) => {
       console.log(msg);
       const chatId = msg.chat.id;
@@ -42,6 +55,7 @@ export class BotTeleService {
           } else {
             await this.sendMessage(chatId, botResponse);
           }
+          await this.saveMessageToGoogleDocs(msg);
         } catch (error) {
           this.logger.error("Error responding to message:", error);
         }
@@ -72,6 +86,34 @@ export class BotTeleService {
       await this.bot.sendMessage(chatId, text);
     } catch (error) {
       this.logger.error("Error sending message:", error);
+    }
+  }
+
+  async saveMessageToGoogleDocs(msg: TelegramBot.Message) {
+    try {
+      const documentId = "1eOtR1xl_o7FSb8XZFjgKOwzCZxjva6ZWeazcgjk-x14";
+
+      const document = await this.docs.documents.get({ documentId });
+      const content = document.data.body?.content || [];
+      const newContent = [
+        {
+          insertText: {
+            text: `User: ${msg.from?.first_name || "Unknown"}\nMessage: ${msg.text}\n\n`,
+            endOfSegmentLocation: {},
+          },
+        },
+      ];
+
+      await this.docs.documents.batchUpdate({
+        documentId,
+        requestBody: {
+          requests: newContent,
+        },
+      });
+
+      this.logger.log("Message saved to Google Docs.");
+    } catch (error) {
+      this.logger.error("Error saving message to Google Docs:", error);
     }
   }
 }
