@@ -2,6 +2,30 @@ import { Injectable, Logger } from "@nestjs/common";
 import * as TelegramBot from "node-telegram-bot-api";
 import OpenAI from "openai";
 import { google } from "googleapis";
+import axios from "axios";
+
+const weatherVN = {
+  Sunny: "Nắng",
+  Clear: "Trời quang đãng",
+  "Partly Cloudy": "Có mây rải rác",
+  Cloudy: "Nhiều mây",
+  Overcast: "U ám",
+  Rain: "Mưa",
+  "Light Rain": "Mưa nhẹ",
+  "Heavy Rain": "Mưa to",
+  Showers: "Mưa rào",
+  Thunderstorm: "Dông bão",
+  Hail: "Mưa đá",
+  Fog: "Sương mù",
+  Windy: "Có gió",
+  Blustery: "Gió mạnh",
+  Drizzle: "Mưa phùn",
+  Hot: "Nóng",
+  Cold: "Lạnh",
+  Humid: "Ẩm ướt",
+  Dry: "Khô",
+  Breezy: "Gió nhẹ",
+};
 
 @Injectable()
 export class BotTeleService {
@@ -42,7 +66,30 @@ export class BotTeleService {
             "CgACAgQAAxkBAAMeZrHtO_up5ux4edTQ9yGgosLL3acAAggDAALVGw1TJYtdAbytVN01BA",
             "CAACAgUAAxkBAAMfZrHtTiYkU74f563poSyj6I4oDF0AAicEAAKp8JBVgB5-8nvYGdQ1BA",
           ];
-          if (badWords?.some((word) => text.includes(word))) {
+          if (text == "/wheather" || text == "/wheather@VBA_FOOD_BOT") {
+            const city = "Hanoi";
+            const apiKey = process.env.WEATHERSTACK_API_KEY;
+            const weatherUrl = `http://api.weatherstack.com/current?access_key=${apiKey}&query=${city}`;
+
+            const weatherResponse = await axios.get(weatherUrl);
+            const weatherData = weatherResponse.data;
+            if (weatherData.error) {
+              await this.bot.sendMessage(
+                chatId,
+                `Không thể lấy thông tin thời tiết cho ${city}. Vui lòng thử lại.`,
+              );
+            } else {
+              const weatherDescription = weatherVN[weatherData.current.weather_descriptions[0]];
+              const temperature = weatherData.current.temperature;
+              const cityName = weatherData.location.name;
+              const country = weatherData.location.country;
+              const time = weatherData.location.localtime;
+
+              const weatherMessage = `Thời tiết tại ${cityName}, ${country}:\nNhiệt độ: ${temperature}°C\nMô tả: ${weatherDescription} \nThời gian : ${time}`;
+
+              await this.bot.sendMessage(chatId, weatherMessage);
+            }
+          } else if (badWords?.some((word) => text.includes(word))) {
             await this.bot.sendAnimation(
               chatId,
               arrAnimationBad[Math.floor(Math.random() * arrAnimationBad.length)],
@@ -98,7 +145,7 @@ export class BotTeleService {
       const newContent = [
         {
           insertText: {
-            text: `User: ${msg.from?.first_name || "Unknown"}\nMessage: ${msg.text}\n\n`,
+            text: `User: ${msg.from?.first_name || "Unknown"}\nMessage: ${msg.text}\nTime: ${new Date().toLocaleString()}\n\n `,
             endOfSegmentLocation: {},
           },
         },
