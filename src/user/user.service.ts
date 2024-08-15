@@ -53,7 +53,7 @@ export class UserService {
       message: "Đổi mật khẩu thành công",
     };
   }
-  async uploadFile(file: Express.Multer.File, currentUser: UserEntity): Promise<string> {
+  async uploadFile(file: Express.Multer.File, currentUser: UserEntity): Promise<any> {
     const formData = new FormData();
     formData.append("image", file.buffer.toString("base64"));
     formData.append("key", process.env.IMGBB_API_KEY);
@@ -66,6 +66,8 @@ export class UserService {
       this.httpService.post("https://api.imgbb.com/1/upload", formData, { headers }),
     );
     await this.userRepository.update({ id: currentUser.id }, { avatar: response.data.data.url });
-    return response.data.data.url;
+    return {
+      url: response.data.data.url,
+    };
   }
 }
