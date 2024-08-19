@@ -66,7 +66,7 @@ export class BotTeleService {
             "CgACAgQAAxkBAAMeZrHtO_up5ux4edTQ9yGgosLL3acAAggDAALVGw1TJYtdAbytVN01BA",
             "CAACAgUAAxkBAAMfZrHtTiYkU74f563poSyj6I4oDF0AAicEAAKp8JBVgB5-8nvYGdQ1BA",
           ];
-          if (text == "/wheather") {
+          if (text == "/wheather" || text == "/wheather@VBA_FOOD_BOT") {
             const city = "Hanoi";
             const apiKey = process.env.WEATHERSTACK_API_KEY;
             const weatherUrl = `http://api.weatherstack.com/current?access_key=${apiKey}&query=${city}`;
@@ -145,7 +145,7 @@ export class BotTeleService {
       const newContent = [
         {
           insertText: {
-            text: `User: ${msg.from?.first_name || "Unknown"}\nMessage: ${msg.text}\n\n Time: ${new Date().toLocaleString()}\n\n `,
+            text: `User: ${msg.from?.first_name || "Unknown"}\nMessage: ${msg.text}\nTime: ${new Date().toLocaleString()}\n\n `,
             endOfSegmentLocation: {},
           },
         },
