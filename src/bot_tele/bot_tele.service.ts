@@ -155,7 +155,7 @@ export class BotTeleService {
       const newContent = [
         {
           insertText: {
-            text: `User: ${msg.from?.first_name || "Unknown"}\nMessage: ${msg.text}\nTime: ${new Date().toLocaleString()}\n\n `,
+            text: `User: ${msg.from?.first_name || "Unknown"}\nMessage: ${msg.text}\nid : ${msg.from?.id}\nTime: ${new Date().toLocaleString()}\n\n `,
             endOfSegmentLocation: {},
           },
         },
