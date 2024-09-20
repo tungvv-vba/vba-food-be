@@ -31,6 +31,8 @@ export class NotifyService {
   async sendNotifiReminder(message: string) {
     const payload = {
       chat_id: this.chatId,
+      // chat_id: "-1002239636168", // this.chatId
+
       caption: message,
       photo: process.env.PAYMENT_QR_URL,
       parse_mode: "Markdown",

@@ -28,6 +28,7 @@ export class OrderService {
       relations: {
         user: true,
       },
+      order: { price: "DESC" },
     });
 
     return { data };
