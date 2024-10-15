@@ -63,7 +63,7 @@ export class NotifyService {
   }
 
   async notifyNewFood() {
-    const message = `Đã có món mới hôm nay, vào đặt cơm bạn nhé! \n${process.env.FRONT_END_URL}`;
+    const message = `Thử nghỉ 1 tuần để biết shop cần khách hay khách cần shop 😏 \nVào đặt cơm bạn nhé \n${process.env.FRONT_END_URL}`;
     await this.sendNotificationToTelegram(message);
   }
 }
