@@ -1,5 +1,17 @@
 version: "3.8"
 services:
+  food-backend:
+    image: food-backend:dev
+    restart: always
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    env_file: .env
+    networks:
+      - vba-food
+    ports:
+      - 127.0.0.1:3000:3000
+
   mysql:
     image: mysql:8.0
     restart: always
