@@ -1,6 +1,7 @@
 version: "3.8"
 services:
   food-backend:
+    container_name: food-backend
     image: food-backend:dev
     restart: always
     build:
@@ -13,9 +14,9 @@ services:
       - 127.0.0.1:3000:3000
 
   mysql:
+    container_name: food-mysql
     image: mysql:8.0
     restart: always
-    container_name: vba-food
     ports:
       - 3306:3306
     volumes:

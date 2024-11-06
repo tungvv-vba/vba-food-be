@@ -4,7 +4,6 @@ COPY package.json yarn.lock ./
 RUN yarn install
 
 COPY . ./
-RUN npm rebuild bcrypt --build-from-source
 RUN yarn build
 
 FROM node:20 AS node_modules
