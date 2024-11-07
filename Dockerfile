@@ -4,6 +4,7 @@ COPY package.json ./
 RUN npm install
 
 COPY . ./
+RUN npm rebuild bcrypt --build-from-source
 RUN npm run build
 
 FROM node:18 AS node_modules
