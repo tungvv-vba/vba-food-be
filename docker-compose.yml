@@ -11,14 +11,14 @@ services:
     networks:
       - vba-food
     ports:
-      - 127.0.0.1:3000:3000
+      - 0.0.0.0:3000:3000
 
   mysql:
     container_name: food-mysql
     image: mysql:8.0
     restart: always
     ports:
-      - 3306:3306
+      - 0.0.0.0:3306:3306
     volumes:
       - vba-food:/var/lib/mysql
     environment:
