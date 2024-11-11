@@ -13,8 +13,9 @@ import {
 import { CreateOrderDto, FindOrderDto, UpdateOrderDto } from "./dtos/order.dto";
 import { OrderService } from "./order.service";
 import { CurrentUser } from "src/user/decorator/currentUser.decorator";
-import { UserEntity } from "src/user/entities/user.entity";
+import { ERole, UserEntity } from "src/user/entities/user.entity";
 import { ApiTags } from "@nestjs/swagger";
+import { Roles } from "src/guards/roles.decorator";
 
 @Controller("order")
 @ApiTags("order")
@@ -43,13 +44,18 @@ export class OrderController {
   }
 
   @Put("/paid")
+  @Roles(ERole.ADMIN)
   updatePaid(@Query("ids") ids: number[]) {
     return this.orderService.updatePaid(ids);
   }
 
   @Put("/:id")
-  update(@Param("id") id: number, @Body() newOrder: UpdateOrderDto) {
-    return this.orderService.update(id, newOrder);
+  update(
+    @Param("id") id: number,
+    @Body() newOrder: UpdateOrderDto,
+    @CurrentUser() currentUser: UserEntity,
+  ) {
+    return this.orderService.update(id, newOrder, currentUser);
   }
 
   @Delete("/:id")

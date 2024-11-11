@@ -16,6 +16,7 @@ import { MenuImageEntity } from "./menu-image/entities/menu-image.entity";
 import { NotifyModule } from "./notify/notify.module";
 import { BotTeleModule } from "./bot_tele/bot_tele.module";
 import { GlobalExceptionFilter } from "./shared/filter/global-exception.filter";
+import { RolesGuard } from "./guards/roles.guard";
 
 @Module({
   imports: [
@@ -51,6 +52,10 @@ import { GlobalExceptionFilter } from "./shared/filter/global-exception.filter";
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
     {
       provide: APP_FILTER,

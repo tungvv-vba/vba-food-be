@@ -12,6 +12,8 @@ import { diskStorage } from "multer";
 import { extname } from "path";
 import { MenuImageService } from "./menu-image.service";
 import { ApiTags } from "@nestjs/swagger";
+import { Roles } from "src/guards/roles.decorator";
+import { ERole } from "src/user/entities/user.entity";
 
 @Controller("menu-image")
 @ApiTags("menu-image")
@@ -24,6 +26,7 @@ export class MenuImageController {
   }
 
   @Post()
+  @Roles(ERole.ADMIN)
   @UseInterceptors(
     FilesInterceptor("images", 10, {
       storage: diskStorage({

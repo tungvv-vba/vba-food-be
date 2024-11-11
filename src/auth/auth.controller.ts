@@ -27,4 +27,9 @@ export class AuthController {
   register(@Body(new ValidationPipe()) body: UserRegisterDto) {
     return this.authService.register(body);
   }
+
+  @Post("refresh")
+  refresh(@Body(new ValidationPipe()) body: UserRegisterDto) {
+    return this.authService.refresh(body);
+  }
 }

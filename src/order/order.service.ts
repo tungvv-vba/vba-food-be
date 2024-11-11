@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { OrderEntity } from "./entities/order.entity";
 import { Between, FindOptionsWhere, Repository } from "typeorm";
@@ -34,7 +34,7 @@ export class OrderService {
     return { data };
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return this.orderRepository.findOneBy({ id });
   }
 
@@ -44,7 +44,11 @@ export class OrderService {
     return this.orderRepository.save(order);
   }
 
-  update(id: number, newOrder: UpdateOrderDto) {
+  async update(id: number, newOrder: UpdateOrderDto, currentUser: UserEntity) {
+    const order = await this.findOne(id);
+    if (order.userId !== currentUser.id) {
+      throw new BadRequestException("Không thể chỉnh sửa order của người khác");
+    }
     return this.orderRepository.update(id, newOrder);
   }
 
