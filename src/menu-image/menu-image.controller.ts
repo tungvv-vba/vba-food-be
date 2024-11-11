@@ -14,6 +14,7 @@ import { MenuImageService } from "./menu-image.service";
 import { ApiTags } from "@nestjs/swagger";
 import { Roles } from "src/guards/roles.decorator";
 import { ERole } from "src/user/entities/user.entity";
+import { FindMenuImageDto } from "./dtos/menu-image.dto";
 
 @Controller("menu-image")
 @ApiTags("menu-image")
@@ -21,8 +22,8 @@ export class MenuImageController {
   constructor(private menuImageService: MenuImageService) {}
 
   @Get()
-  findAll() {
-    return this.menuImageService.findAll();
+  findAll(@Query() query: FindMenuImageDto) {
+    return this.menuImageService.findAll(query);
   }
 
   @Post()

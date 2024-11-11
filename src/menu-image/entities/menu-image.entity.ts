@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: "menu_images" })
 export class MenuImageEntity {
@@ -7,4 +7,7 @@ export class MenuImageEntity {
 
   @Column()
   url: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

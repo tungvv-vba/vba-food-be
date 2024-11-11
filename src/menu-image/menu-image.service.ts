@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { MenuImageEntity } from "./entities/menu-image.entity";
-import { Repository } from "typeorm";
 import { promises as fsPromises } from "fs";
 import { join } from "path";
 import { NotifyService } from "src/notify/notify.service";
-import { IPageResponse } from "./interface/IPageResponse";
-import { OrderEntity } from "src/order/entities/order.entity";
+import { Between, FindOptionsWhere, Repository } from "typeorm";
+import { MenuImageEntity } from "./entities/menu-image.entity";
+import { FindMenuImageDto } from "./dtos/menu-image.dto";
 
 @Injectable()
 export class MenuImageService {
@@ -15,8 +14,19 @@ export class MenuImageService {
     private notifyService: NotifyService,
   ) {}
 
-  async findAll() {
-    const data = await this.menuImageRepository.find();
+  async findAll(query?: FindMenuImageDto) {
+    const where: FindOptionsWhere<MenuImageEntity> = {};
+    if (query?.date) {
+      const startDate = new Date(query.date);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(query.date);
+      endDate.setHours(23, 59, 59, 999);
+
+      where.createdAt = Between(startDate, endDate);
+    }
+
+    const data = await this.menuImageRepository.findBy(where);
+
     return { data };
   }
 
