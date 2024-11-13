@@ -1,17 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { promises as fsPromises } from "fs";
-import { join } from "path";
 import { NotifyService } from "src/notify/notify.service";
+import { UploadFileService } from "src/upload-file/upload-file.service";
 import { Between, FindOptionsWhere, Repository } from "typeorm";
-import { MenuImageEntity } from "./entities/menu-image.entity";
 import { FindMenuImageDto } from "./dtos/menu-image.dto";
+import { MenuImageEntity } from "./entities/menu-image.entity";
 
 @Injectable()
 export class MenuImageService {
   constructor(
     @InjectRepository(MenuImageEntity) private menuImageRepository: Repository<MenuImageEntity>,
     private notifyService: NotifyService,
+    private uploadFileService: UploadFileService,
   ) {}
 
   async findAll(query?: FindMenuImageDto) {
@@ -36,31 +36,22 @@ export class MenuImageService {
 
   async create(files: Array<Express.Multer.File>) {
     const menuImages = files.map((file) => {
-      return this.menuImageRepository.create({ url: file.path });
+      return this.uploadFileService.uploadFileToPublicBucket(file);
     });
-    await this.notifyService.notifyNewFood();
-    return this.menuImageRepository.save(menuImages);
+    const images = await Promise.all(menuImages);
+    // await this.notifyService.notifyNewFood();
+    return this.menuImageRepository.save(images);
   }
 
   async delete(ids: number[]) {
     if (!ids || ids.length === 0) return;
-    for (const id of ids) {
+    const idList = [ids].flat();
+    for (const id of idList) {
       const image = await this.findOne(id);
-      if (image?.url) {
-        await this.deleteFile(image.url);
+      if (image?.key) {
+        await this.uploadFileService.deleteFileFromPublicBucket(image.key);
       }
     }
     return this.menuImageRepository.delete(ids);
-  }
-
-  async deleteFile(path: string) {
-    const filePath = join(__dirname, "..", "..", path);
-
-    try {
-      await fsPromises.unlink(filePath);
-      return { message: "File deleted successfully" };
-    } catch (err) {
-      throw new Error("Error deleting file");
-    }
   }
 }

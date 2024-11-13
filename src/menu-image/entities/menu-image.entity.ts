@@ -8,6 +8,9 @@ export class MenuImageEntity {
   @Column()
   url: string;
 
+  @Column()
+  key: string;
+
   @CreateDateColumn()
   createdAt: Date;
 }
