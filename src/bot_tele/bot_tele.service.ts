@@ -49,7 +49,6 @@ export class BotTeleService {
     // this.openai = new OpenAI({
     //   apiKey: process.env.OPENAI_API_KEY,
     // });
-
     // // Authenticate Google API
     // const auth = new google.auth.GoogleAuth({
     //   keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS,
@@ -59,7 +58,6 @@ export class BotTeleService {
     //   ],
     // });
     // this.docs = google.docs({ version: "v1", auth });
-
     // this.bot.on("message", async (msg) => {
     //   console.log(msg);
     //   const chatId = msg.chat.id;
@@ -80,7 +78,6 @@ export class BotTeleService {
     //         const city = "Hanoi";
     //         const apiKey = process.env.WEATHERSTACK_API_KEY;
     //         const weatherUrl = `http://api.weatherstack.com/current?access_key=${apiKey}&query=${city}`;
-
     //         const weatherResponse = await axios.get(weatherUrl);
     //         const weatherData = weatherResponse.data;
     //         if (weatherData.error) {
@@ -94,9 +91,7 @@ export class BotTeleService {
     //           const cityName = weatherData.location.name;
     //           const country = weatherData.location.country;
     //           const time = weatherData.location.localtime;
-
     //           const weatherMessage = `Thời tiết tại ${cityName}, ${country}:\nNhiệt độ: ${temperature}°C\nMô tả: ${weatherDescription} \nThời gian : ${time}`;
-
     //           await this.bot.sendMessage(chatId, weatherMessage);
     //         }
     //       } else if (badWords?.some((word) => text.includes(word))) {

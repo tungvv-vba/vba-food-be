@@ -51,7 +51,5 @@ export class AuthService {
     };
   }
 
-  async refresh(body){
-    
-  }
+  async refresh(body) {}
 }
