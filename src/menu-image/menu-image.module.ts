@@ -4,10 +4,10 @@ import { MenuImageController } from "./menu-image.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { MenuImageEntity } from "./entities/menu-image.entity";
 import { NotifyModule } from "src/notify/notify.module";
-import { UploadFileModule } from "src/upload-file/upload-file.module";
+import { FileModule } from "src/file/file.module";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MenuImageEntity]), NotifyModule, UploadFileModule],
+  imports: [TypeOrmModule.forFeature([MenuImageEntity]), NotifyModule, FileModule],
   providers: [MenuImageService],
   controllers: [MenuImageController],
   exports: [MenuImageService],

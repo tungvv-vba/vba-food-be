@@ -1,6 +1,7 @@
-import { IsNotEmpty, MinLength } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, MinLength } from "class-validator";
 import { ERole } from "../entities/user.entity";
 import { ApiProperty } from "@nestjs/swagger";
+import { Transform } from "class-transformer";
 
 export class UserLoginDto {
   @ApiProperty({ required: true })
@@ -19,6 +20,16 @@ export class UserRegisterDto {
     message: "username tối thiểu 3 ký tự",
   })
   username: string;
+
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  @IsEmail()
+  @Transform(({ value }) => value?.toLowerCase().trim())
+  email: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  avatarUrl: string;
 
   @ApiProperty({ required: true })
   @IsNotEmpty()

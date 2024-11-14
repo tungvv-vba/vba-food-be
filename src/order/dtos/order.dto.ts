@@ -1,13 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsNumber, MaxLength } from "class-validator";
 
 export class CreateOrderDto {
   @ApiProperty({ required: true })
   @IsNotEmpty()
+  @IsNumber()
   price: number;
 
   @ApiProperty({ required: true })
   @IsNotEmpty()
+  @MaxLength(255)
   items: string;
 
   @ApiProperty({ required: false })
@@ -19,9 +21,11 @@ export class CreateOrderDto {
 
 export class UpdateOrderDto {
   @ApiProperty({ required: false })
+  @IsNumber()
   price: number;
 
   @ApiProperty({ required: false })
+  @MaxLength(255)
   items: string;
 
   @ApiProperty({ required: false })

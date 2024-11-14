@@ -17,7 +17,8 @@ import { NotifyModule } from "./notify/notify.module";
 import { BotTeleModule } from "./bot_tele/bot_tele.module";
 import { GlobalExceptionFilter } from "./shared/filter/global-exception.filter";
 import { RolesGuard } from "./guards/roles.guard";
-import { UploadFileModule } from "./upload-file/upload-file.module";
+import { FileModule } from "./file/file.module";
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -46,7 +47,8 @@ import { UploadFileModule } from "./upload-file/upload-file.module";
     AuthModule,
     NotifyModule,
     BotTeleModule,
-    UploadFileModule,
+    FileModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [

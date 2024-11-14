@@ -24,14 +24,14 @@ export class OrderEntity {
   })
   items: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
 
   @Exclude()
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: "deleted_at" })
   deletedAt: Date;
 
   @Column()
@@ -42,9 +42,9 @@ export class OrderEntity {
   @Transform(({ value }) => value.fullName)
   user: UserEntity;
 
-  @Column({ default: false })
+  @Column({ default: false, name: "is_paid" })
   isPaid: boolean;
 
-  @Column({ default: 2 })
+  @Column({ default: 2, name: "rice_option" })
   riceOption: number;
 }

@@ -24,6 +24,10 @@ export class UserService {
   findOne(username: string) {
     return this.userRepository.findOneBy({ username });
   }
+
+  findOneByEmail(email: string) {
+    return this.userRepository.findOneBy({ email });
+  }
   create(body: UserRegisterDto) {
     const newUser = this.userRepository.create(body);
     return this.userRepository.save(newUser);
@@ -65,7 +69,7 @@ export class UserService {
     const response = await lastValueFrom(
       this.httpService.post("https://api.imgbb.com/1/upload", formData, { headers }),
     );
-    await this.userRepository.update({ id: currentUser.id }, { avatar: response.data.data.url });
+    await this.userRepository.update({ id: currentUser.id }, { avatarUrl: response.data.data.url });
     return {
       url: response.data.data.url,
     };

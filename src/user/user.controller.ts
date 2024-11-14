@@ -11,7 +11,7 @@ const storage = multer.memoryStorage();
 @Controller("user")
 @ApiTags("user")
 export class UserController {
-  constructor(private readonly userSrrvice: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
   @Get("/")
   getHello(): string {
@@ -20,7 +20,7 @@ export class UserController {
 
   @Post("/change-password")
   async changePassword(@Body() request: ChangePasswordDto, @CurrentUser() currentUser: UserEntity) {
-    return await this.userSrrvice.changePassword(request, currentUser);
+    return await this.userService.changePassword(request, currentUser);
   }
 
   @Post("change/avatar")
@@ -29,6 +29,6 @@ export class UserController {
     @UploadedFile() file: Express.Multer.File,
     @CurrentUser() currentUser: UserEntity,
   ) {
-    return await this.userSrrvice.uploadFile(file, currentUser);
+    return await this.userService.uploadFile(file, currentUser);
   }
 }

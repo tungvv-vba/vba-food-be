@@ -11,6 +11,6 @@ export class MenuImageEntity {
   @Column()
   key: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 }

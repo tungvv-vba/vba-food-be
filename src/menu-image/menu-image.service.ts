@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { NotifyService } from "src/notify/notify.service";
-import { UploadFileService } from "src/upload-file/upload-file.service";
+import { FileService } from "src/file/file.service";
 import { Between, FindOptionsWhere, Repository } from "typeorm";
 import { FindMenuImageDto } from "./dtos/menu-image.dto";
 import { MenuImageEntity } from "./entities/menu-image.entity";
@@ -11,7 +11,7 @@ export class MenuImageService {
   constructor(
     @InjectRepository(MenuImageEntity) private menuImageRepository: Repository<MenuImageEntity>,
     private notifyService: NotifyService,
-    private uploadFileService: UploadFileService,
+    private fileService: FileService,
   ) {}
 
   async findAll(query?: FindMenuImageDto) {
@@ -36,10 +36,10 @@ export class MenuImageService {
 
   async create(files: Array<Express.Multer.File>) {
     const menuImages = files.map((file) => {
-      return this.uploadFileService.uploadFileToPublicBucket(file);
+      return this.fileService.uploadFileToPublicBucket(file);
     });
     const images = await Promise.all(menuImages);
-    // await this.notifyService.notifyNewFood();
+    await this.notifyService.notifyNewFood();
     return this.menuImageRepository.save(images);
   }
 
@@ -49,7 +49,7 @@ export class MenuImageService {
     for (const id of idList) {
       const image = await this.findOne(id);
       if (image?.key) {
-        await this.uploadFileService.deleteFileFromPublicBucket(image.key);
+        await this.fileService.deleteFileFromPublicBucket(image.key);
       }
     }
     return this.menuImageRepository.delete(ids);

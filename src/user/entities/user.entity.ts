@@ -31,6 +31,9 @@ export class UserEntity extends BaseEntity {
   @Column()
   password: string;
 
+  @Column()
+  email: string;
+
   @Column({
     type: "enum",
     default: ERole.USER,
@@ -38,17 +41,17 @@ export class UserEntity extends BaseEntity {
   })
   role: string;
 
-  @Column({ nullable: true })
-  avatar?: string;
+  @Column({ nullable: true, name: "avatar_url" })
+  avatarUrl?: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
 
   @Exclude()
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: "deleted_at" })
   deletedAt: Date;
 
   @OneToMany(() => OrderEntity, (order) => order.user)
