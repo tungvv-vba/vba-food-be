@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { NotifyService } from "src/notify/notify.service";
 import { FileService } from "src/file/file.service";
+import { NotifyService } from "src/notify/notify.service";
 import { Between, FindOptionsWhere, Repository } from "typeorm";
 import { FindMenuImageDto } from "./dtos/menu-image.dto";
 import { MenuImageEntity } from "./entities/menu-image.entity";
@@ -34,7 +34,7 @@ export class MenuImageService {
     return this.menuImageRepository.findOneBy({ id });
   }
 
-  async create(files: Array<Express.Multer.File>) {
+  async create(files: Array<Partial<Express.Multer.File>>) {
     const menuImages = files.map((file) => {
       return this.fileService.uploadFileToPublicBucket(file);
     });

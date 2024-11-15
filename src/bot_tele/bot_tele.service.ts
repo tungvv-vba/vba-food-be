@@ -1,8 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import axios from "axios";
 import * as TelegramBot from "node-telegram-bot-api";
 import OpenAI from "openai";
-import { google } from "googleapis";
-import axios from "axios";
+import { MenuImageService } from "src/menu-image/menu-image.service";
 
 const weatherVN = {
   Sunny: "Nắng",
@@ -44,8 +45,12 @@ export class BotTeleService {
   private readonly logger = new Logger(BotTeleService.name);
   private docs: any;
 
-  constructor() {
-    // this.bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
+  constructor(
+    private readonly menuImageService: MenuImageService,
+    private readonly configService: ConfigService,
+  ) {
+    this.bot = new TelegramBot(configService.get("TELEGRAM_BOT_TOKEN"), { polling: true });
+    this.bot.on("message", (msg) => this.handleMessage(msg));
     // this.openai = new OpenAI({
     //   apiKey: process.env.OPENAI_API_KEY,
     // });
@@ -113,6 +118,31 @@ export class BotTeleService {
     //     }
     //   }
     // });
+  }
+
+  async handleMessage(msg: TelegramBot.Message) {
+    if (msg.photo && msg.chat.id === 1770044949) {
+      try {
+        const fileId = msg.photo[msg.photo.length - 1].file_id;
+        const filePath = await this.bot.getFile(fileId).then((file) => file.file_path);
+
+        const fileUrl = `https://api.telegram.org/file/bot${this.configService.get("TELEGRAM_BOT_TOKEN")}/${filePath}`;
+        const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
+        const buffer = Buffer.from(response.data, "binary");
+
+        const file: Partial<Express.Multer.File> = {
+          buffer,
+          originalname: "vba-food.jpg",
+          mimetype: "image/jpg",
+        };
+
+        await this.menuImageService.create([file]);
+
+        this.sendMessage(msg.chat.id, "Upload ảnh thành công!");
+      } catch (error) {
+        this.sendMessage(msg.chat.id, "Upload ảnh thất bại!");
+      }
+    }
   }
 
   async getResponse(prompt: string): Promise<string> {

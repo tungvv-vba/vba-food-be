@@ -1,8 +1,10 @@
 import { Module } from "@nestjs/common";
+import { MenuImageModule } from "src/menu-image/menu-image.module";
 import { BotTeleController } from "./bot_tele.controller";
 import { BotTeleService } from "./bot_tele.service";
 
 @Module({
+  imports: [MenuImageModule],
   controllers: [BotTeleController],
   providers: [BotTeleService],
   exports: [BotTeleService],

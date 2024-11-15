@@ -1,16 +1,15 @@
 import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
-import { ValidationPipe } from "@nestjs/common";
 import { NestExpressApplication } from "@nestjs/platform-express";
-import { join } from "path";
-import { PORT } from "./constants";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { join } from "path";
+import { AppModule } from "./app.module";
+import { PORT } from "./constants";
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useStaticAssets(join(__dirname, "..", "uploads"));
   app.enableCors();
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes();
   const config = new DocumentBuilder()
     .setTitle("VBA API Documentation")
     .setDescription("API description")

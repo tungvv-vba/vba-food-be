@@ -8,7 +8,7 @@ import { AuthModule } from "./auth/auth.module";
 import { JwtModule } from "@nestjs/jwt";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserEntity } from "./user/entities/user.entity";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { APP_FILTER, APP_GUARD } from "@nestjs/core";
 import { AuthGuard } from "./guards/auth.guard";
 import { OrderEntity } from "./order/entities/order.entity";
@@ -18,7 +18,9 @@ import { BotTeleModule } from "./bot_tele/bot_tele.module";
 import { GlobalExceptionFilter } from "./shared/filter/global-exception.filter";
 import { RolesGuard } from "./guards/roles.guard";
 import { FileModule } from "./file/file.module";
-import { MailModule } from './mail/mail.module';
+import { MailerModule } from "@nestjs-modules/mailer";
+import { join } from "path";
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
@@ -41,6 +43,30 @@ import { MailModule } from './mail/mail.module';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.EXPIRES_IN },
     }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        transport: {
+          host: configService.get<string>("MAIL_HOST"),
+          port: configService.get<number>("MAIL_PORT"),
+          auth: {
+            user: configService.get<string>("MAIL_USER"),
+            pass: configService.get<string>("MAIL_PASSWORD"),
+          },
+        },
+        defaults: {
+          from: `"No Reply" <${configService.get<string>("MAIL_FROM")}>`,
+        },
+        template: {
+          dir: join(__dirname, 'src/templates/email'),
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+      }),
+    }),
     UserModule,
     OrderModule,
     MenuImageModule,
@@ -48,7 +74,6 @@ import { MailModule } from './mail/mail.module';
     NotifyModule,
     BotTeleModule,
     FileModule,
-    MailModule,
   ],
   controllers: [AppController],
   providers: [

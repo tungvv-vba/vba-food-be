@@ -15,7 +15,7 @@ export class FileService {
     });
   }
 
-  async uploadFileToPublicBucket(file: Express.Multer.File) {
+  async uploadFileToPublicBucket(file: Partial<Express.Multer.File>) {
     const { originalname, buffer, mimetype, size } = file;
     const bucketName = this.configService.getOrThrow("AWS_S3_PUBLIC_BUCKET");
     const key = `${Date.now().toString()}-${originalname}`;
