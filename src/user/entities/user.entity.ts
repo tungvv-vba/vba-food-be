@@ -31,8 +31,8 @@ export class UserEntity extends BaseEntity {
   @Column()
   password: string;
 
-  @Column()
-  email: string;
+  // @Column()
+  // email: string;
 
   @Column({
     type: "enum",
