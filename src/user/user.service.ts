@@ -25,9 +25,9 @@ export class UserService {
     return this.userRepository.findOneBy({ username });
   }
 
-  findOneByEmail(email: string) {
-    return this.userRepository.findOneBy({ email });
-  }
+  // findOneByEmail(email: string) {
+  //   return this.userRepository.findOneBy({ email });
+  // }
   create(body: UserRegisterDto) {
     const newUser = this.userRepository.create(body);
     return this.userRepository.save(newUser);

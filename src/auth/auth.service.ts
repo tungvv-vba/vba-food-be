@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import * as bcrypt from "bcrypt";
 import { UserLoginDto, UserRegisterDto } from "src/user/dtos/user.dto";
 import { UserService } from "src/user/user.service";
-import * as bcrypt from "bcrypt";
+import { ForgetPasswordDto } from "./auth.dto";
 
 @Injectable()
 export class AuthService {
@@ -52,4 +53,12 @@ export class AuthService {
   }
 
   async refresh(body) {}
+
+  async forgetPassword({ email }: ForgetPasswordDto) {
+    // const user = await this.userService.findOneByEmail(email);
+
+    // if (!user) {
+    //   throw new BadRequestException("Không tìm thấy người dùng");
+    // }
+  }
 }
