@@ -1,25 +1,22 @@
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
   Param,
   Post,
   Put,
-  Query,
-  UseInterceptors,
+  Query
 } from "@nestjs/common";
-import { CreateOrderDto, FindOrderDto, UpdateOrderDto } from "./dtos/order.dto";
-import { OrderService } from "./order.service";
-import { CurrentUser } from "src/user/decorator/currentUser.decorator";
-import { ERole, UserEntity } from "src/user/entities/user.entity";
 import { ApiTags } from "@nestjs/swagger";
 import { Roles } from "src/guards/roles.decorator";
+import { CurrentUser } from "src/user/decorator/currentUser.decorator";
+import { ERole, UserEntity } from "src/user/entities/user.entity";
+import { CreateOrderDto, FindOrderDto, UpdateOrderDto } from "./dtos/order.dto";
+import { OrderService } from "./order.service";
 
 @Controller("order")
 @ApiTags("order")
-@UseInterceptors(ClassSerializerInterceptor)
 export class OrderController {
   constructor(private orderService: OrderService) {}
 

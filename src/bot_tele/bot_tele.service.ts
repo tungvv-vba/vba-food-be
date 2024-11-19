@@ -4,6 +4,7 @@ import axios from "axios";
 import * as TelegramBot from "node-telegram-bot-api";
 import OpenAI from "openai";
 import { MenuImageService } from "src/menu-image/menu-image.service";
+import { NotifyService } from "src/notify/notify.service";
 
 const weatherVN = {
   Sunny: "Nắng",
@@ -44,11 +45,14 @@ export class BotTeleService {
   private openai: OpenAI;
   private readonly logger = new Logger(BotTeleService.name);
   private docs: any;
+  private teleAdminId: string;
 
   constructor(
     private readonly menuImageService: MenuImageService,
     private readonly configService: ConfigService,
+    private notifyService: NotifyService,
   ) {
+    this.teleAdminId = configService.getOrThrow("TELEGRAM_ADMIN_ID");
     this.bot = new TelegramBot(configService.get("TELEGRAM_BOT_TOKEN"), { polling: true });
     this.bot.on("message", (msg) => this.handleMessage(msg));
     // this.openai = new OpenAI({
@@ -79,27 +83,7 @@ export class BotTeleService {
     //         "CgACAgQAAxkBAAMeZrHtO_up5ux4edTQ9yGgosLL3acAAggDAALVGw1TJYtdAbytVN01BA",
     //         "CAACAgUAAxkBAAMfZrHtTiYkU74f563poSyj6I4oDF0AAicEAAKp8JBVgB5-8nvYGdQ1BA",
     //       ];
-    //       if (text == "/wheather" || text == "/wheather@VBA_FOOD_BOT") {
-    //         const city = "Hanoi";
-    //         const apiKey = process.env.WEATHERSTACK_API_KEY;
-    //         const weatherUrl = `http://api.weatherstack.com/current?access_key=${apiKey}&query=${city}`;
-    //         const weatherResponse = await axios.get(weatherUrl);
-    //         const weatherData = weatherResponse.data;
-    //         if (weatherData.error) {
-    //           await this.bot.sendMessage(
-    //             chatId,
-    //             `Không thể lấy thông tin thời tiết cho ${city}. Vui lòng thử lại.`,
-    //           );
-    //         } else {
-    //           const weatherDescription = weatherVN[weatherData.current.weather_descriptions[0]];
-    //           const temperature = weatherData.current.temperature;
-    //           const cityName = weatherData.location.name;
-    //           const country = weatherData.location.country;
-    //           const time = weatherData.location.localtime;
-    //           const weatherMessage = `Thời tiết tại ${cityName}, ${country}:\nNhiệt độ: ${temperature}°C\nMô tả: ${weatherDescription} \nThời gian : ${time}`;
-    //           await this.bot.sendMessage(chatId, weatherMessage);
-    //         }
-    //       } else if (badWords?.some((word) => text.includes(word))) {
+    //    if (badWords?.some((word) => text.includes(word))) {
     //         await this.bot.sendAnimation(
     //           chatId,
     //           arrAnimationBad[Math.floor(Math.random() * arrAnimationBad.length)],
@@ -121,9 +105,38 @@ export class BotTeleService {
   }
 
   async handleMessage(msg: TelegramBot.Message) {
-    if (msg.photo && msg.chat.id === 1770044949) {
+    const {
+      text,
+      photo,
+      chat: { id: chatId },
+    } = msg;
+
+    if (text === "/notify" || (text === "/notify@VBA_FOOD_BOT" && chatId === this.teleAdminId)) {
+      await this.notifyService.notifyNewFood();
+    }
+
+    if (text == "/weather" || text == "/weather@VBA_FOOD_BOT") {
+      const city = "Hanoi";
+      const apiKey = this.configService.get("WEATHERSTACK_API_KEY");
+      const weatherUrl = `http://api.weatherstack.com/current?access_key=${apiKey}&query=${city}`;
+      const { data } = await axios.get(weatherUrl);
+      if (data.error) {
+        await this.bot.sendMessage(
+          chatId,
+          `Không thể lấy thông tin thời tiết cho ${city}. Vui lòng thử lại.`,
+        );
+      } else {
+        const weatherDescription = weatherVN[data.current.weather_descriptions[0]];
+        const { temperature } = data.current;
+        const { name: cityName, country, localtime } = data.location;
+        const weatherMessage = `Thời tiết tại ${cityName}, ${country}:\nNhiệt độ: ${temperature}°C\nMô tả: ${weatherDescription} \nThời gian : ${localtime}`;
+        await this.bot.sendMessage(chatId, weatherMessage);
+      }
+    }
+
+    if (photo && chatId === this.teleAdminId) {
       try {
-        const fileId = msg.photo[msg.photo.length - 1].file_id;
+        const fileId = photo[photo.length - 1].file_id;
         const filePath = await this.bot.getFile(fileId).then((file) => file.file_path);
 
         const fileUrl = `https://api.telegram.org/file/bot${this.configService.get("TELEGRAM_BOT_TOKEN")}/${filePath}`;

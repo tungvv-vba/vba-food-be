@@ -1,26 +1,25 @@
+import { MailerModule } from "@nestjs-modules/mailer";
 import { Module } from "@nestjs/common";
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
-import { UserModule } from "./user/user.module";
-import { OrderModule } from "./order/order.module";
-import { MenuImageModule } from "./menu-image/menu-image.module";
-import { AuthModule } from "./auth/auth.module";
-import { JwtModule } from "@nestjs/jwt";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { UserEntity } from "./user/entities/user.entity";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { APP_FILTER, APP_GUARD } from "@nestjs/core";
-import { AuthGuard } from "./guards/auth.guard";
-import { OrderEntity } from "./order/entities/order.entity";
-import { MenuImageEntity } from "./menu-image/entities/menu-image.entity";
-import { NotifyModule } from "./notify/notify.module";
-import { BotTeleModule } from "./bot_tele/bot_tele.module";
-import { GlobalExceptionFilter } from "./shared/filter/global-exception.filter";
-import { RolesGuard } from "./guards/roles.guard";
-import { FileModule } from "./file/file.module";
-import { MailerModule } from "@nestjs-modules/mailer";
+import { JwtModule } from "@nestjs/jwt";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import { join } from "path";
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+import { AuthModule } from "./auth/auth.module";
+import { BotTeleModule } from "./bot_tele/bot_tele.module";
+import { FileModule } from "./file/file.module";
+import { AuthGuard } from "./guards/auth.guard";
+import { RolesGuard } from "./guards/roles.guard";
+import { MenuImageEntity } from "./menu-image/entities/menu-image.entity";
+import { MenuImageModule } from "./menu-image/menu-image.module";
+import { NotifyModule } from "./notify/notify.module";
+import { OrderEntity } from "./order/entities/order.entity";
+import { OrderModule } from "./order/order.module";
+import { GlobalExceptionFilter } from "./shared/filter/global-exception.filter";
+import { UserEntity } from "./user/entities/user.entity";
+import { UserModule } from "./user/user.module";
 
 @Module({
   imports: [
@@ -60,7 +59,6 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
         },
         template: {
           dir: join(__dirname, 'src/templates/email'),
-          adapter: new HandlebarsAdapter(),
           options: {
             strict: true,
           },

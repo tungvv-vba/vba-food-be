@@ -21,11 +21,11 @@ export class UserRegisterDto {
   })
   username: string;
 
-  // @ApiProperty({ required: true })
-  // @IsNotEmpty()
-  // @IsEmail()
-  // @Transform(({ value }) => value?.toLowerCase().trim())
-  // email: string;
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  @IsEmail()
+  @Transform(({ value }) => value?.toLowerCase().trim())
+  email: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -34,6 +34,10 @@ export class UserRegisterDto {
   @ApiProperty({ required: true })
   @IsNotEmpty()
   password: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  resetToken: string;
 
   @ApiProperty({ required: true })
   @IsNotEmpty()

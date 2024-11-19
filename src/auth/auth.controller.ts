@@ -1,35 +1,38 @@
-import {
-  Body,
-  ClassSerializerInterceptor,
-  Controller,
-  Post,
-  UseInterceptors,
-  ValidationPipe,
-} from "@nestjs/common";
-import { AuthService } from "./auth.service";
-import { UserLoginDto, UserRegisterDto } from "src/user/dtos/user.dto";
-import { Public } from "src/constants";
+import { Body, Controller, Post } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
+import { Public } from "src/constants";
+import { UserLoginDto, UserRegisterDto } from "src/user/dtos/user.dto";
+import { ForgetPasswordDto, ResetPasswordDto } from "./auth.dto";
+import { AuthService } from "./auth.service";
 
 @Public()
-@UseInterceptors(ClassSerializerInterceptor)
 @ApiTags("authentication")
 @Controller("/")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post("login")
-  login(@Body(new ValidationPipe()) body: UserLoginDto) {
+  login(@Body() body: UserLoginDto) {
     return this.authService.login(body);
   }
 
   @Post("register")
-  register(@Body(new ValidationPipe()) body: UserRegisterDto) {
+  register(@Body() body: UserRegisterDto) {
     return this.authService.register(body);
   }
 
   @Post("refresh")
-  refresh(@Body(new ValidationPipe()) body: UserRegisterDto) {
+  refresh(@Body() body: UserRegisterDto) {
     return this.authService.refresh(body);
+  }
+
+  @Post("forget-password")
+  forgetPassword(@Body() body: ForgetPasswordDto) {
+    return this.authService.forgetPassword(body);
+  }
+
+  @Post("reset-password")
+  resetPassword(@Body() body: ResetPasswordDto) {
+    return this.authService.resetPassword(body);
   }
 }

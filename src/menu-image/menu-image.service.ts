@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { FileService } from "src/file/file.service";
-import { NotifyService } from "src/notify/notify.service";
 import { Between, FindOptionsWhere, Repository } from "typeorm";
 import { FindMenuImageDto } from "./dtos/menu-image.dto";
 import { MenuImageEntity } from "./entities/menu-image.entity";
@@ -10,7 +9,6 @@ import { MenuImageEntity } from "./entities/menu-image.entity";
 export class MenuImageService {
   constructor(
     @InjectRepository(MenuImageEntity) private menuImageRepository: Repository<MenuImageEntity>,
-    private notifyService: NotifyService,
     private fileService: FileService,
   ) {}
 
@@ -39,7 +37,6 @@ export class MenuImageService {
       return this.fileService.uploadFileToPublicBucket(file);
     });
     const images = await Promise.all(menuImages);
-    await this.notifyService.notifyNewFood();
     return this.menuImageRepository.save(images);
   }
 

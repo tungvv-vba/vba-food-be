@@ -18,6 +18,16 @@ export class ForgetPasswordDto {
   @ApiProperty({ required: true })
   @IsNotEmpty()
   @IsEmail()
-  @Transform(({ value }) => value?.toLowerCase().trim())
+  @Transform(({ value }) => value?.toLowerCase()?.trim())
   email: string;
+}
+
+export class ResetPasswordDto {
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  token: string;
+
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  password: string;
 }

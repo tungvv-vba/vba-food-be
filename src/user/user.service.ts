@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { HttpService } from "@nestjs/axios";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "./entities/user.entity";
-import { Repository } from "typeorm";
+import { FindOptionsWhere, Repository } from "typeorm";
 import { UserRegisterDto } from "./dtos/user.dto";
 import { ChangePasswordDto } from "./dtos/change-password.dto";
 import { lastValueFrom } from "rxjs";
@@ -21,20 +21,16 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  findOne(username: string) {
-    return this.userRepository.findOneBy({ username });
+  findOne(where: FindOptionsWhere<UserEntity>) {
+    return this.userRepository.findOneBy(where);
   }
-
-  // findOneByEmail(email: string) {
-  //   return this.userRepository.findOneBy({ email });
-  // }
   create(body: UserRegisterDto) {
     const newUser = this.userRepository.create(body);
     return this.userRepository.save(newUser);
   }
 
-  update() {
-    return "update user";
+  update(id: number, body: Partial<UserRegisterDto>) {
+    return this.userRepository.update(id, body);
   }
 
   delete(id: string) {
@@ -43,7 +39,7 @@ export class UserService {
 
   async changePassword(request: ChangePasswordDto, currentUser: UserEntity) {
     const { password, oldPassword } = request;
-    const user = await this.findOne(currentUser.username);
+    const user = await this.findOne({ username: currentUser.username });
     if (!user) throw new NotFoundException("Không tìm thấy user");
     const isPasswordValid = await comparePasswordHash(oldPassword, user.password);
     if (!isPasswordValid) throw new BadRequestException("Mật khẩu cũ không đúng");

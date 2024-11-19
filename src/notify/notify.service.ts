@@ -1,21 +1,26 @@
 import { BadRequestException, forwardRef, Inject, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import axios from "axios";
 import { MenuImageService } from "src/menu-image/menu-image.service";
 import { OrderService } from "src/order/order.service";
 
 @Injectable()
 export class NotifyService {
+  private chatId: string;
+  private telegramBotUrlSendMs: string;
+  private telegramBotUrlSendPhoto: string;
   constructor(
     @Inject(forwardRef(() => MenuImageService)) private menuImageService: MenuImageService,
     @Inject(forwardRef(() => OrderService)) private orderService: OrderService,
-  ) {}
-
-  private telegramBotUrlSendMs = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
-  private telegramBotUrlSendPhoto = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendPhoto`;
-  private chatId = process.env.TELEGRAM_CHAT_ID;
+    private configService: ConfigService,
+  ) {
+    this.chatId = configService.getOrThrow("TELEGRAM_CHAT_ID");
+    const telegramBotUrl = `https://api.telegram.org/bot${configService.getOrThrow("TELEGRAM_BOT_TOKEN")}`;
+    this.telegramBotUrlSendMs = `${telegramBotUrl}/sendMessage`;
+    this.telegramBotUrlSendPhoto = `${telegramBotUrl}/sendPhoto`;
+  }
   async sendNotificationToTelegram(message: string) {
     const payload = {
-      // chat_id: "-1002239636168", // this.chatId
       chat_id: this.chatId,
       text: message,
       parse_mode: "Markdown",
@@ -31,12 +36,11 @@ export class NotifyService {
   async sendNotifiReminder(message: string) {
     const payload = {
       chat_id: this.chatId,
-      // chat_id: "-1002239636168", // this.chatId
-
       caption: message,
-      photo: process.env.PAYMENT_QR_URL,
+      photo: this.configService.getOrThrow("PAYMENT_QR_URL"),
       parse_mode: "Markdown",
     };
+
     try {
       await axios.post(this.telegramBotUrlSendPhoto, payload);
       return "Gửi thông báo thành công";
