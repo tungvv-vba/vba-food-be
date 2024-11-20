@@ -6,11 +6,6 @@ export class RefreshTokenDto {
   @ApiProperty({ required: true })
   @IsNotEmpty()
   @IsString()
-  accessToken: string;
-
-  @ApiProperty({ required: true })
-  @IsNotEmpty()
-  @IsString()
   refreshToken: string;
 }
 

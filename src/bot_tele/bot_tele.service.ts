@@ -53,7 +53,7 @@ export class BotTeleService {
     private notifyService: NotifyService,
   ) {
     this.teleAdminId = configService.getOrThrow("TELEGRAM_ADMIN_ID");
-    this.bot = new TelegramBot(configService.get("TELEGRAM_BOT_TOKEN"), { polling: true });
+    this.bot = new TelegramBot(configService.get("TELEGRAM_BOT_TOKEN"));
     this.bot.on("message", (msg) => this.handleMessage(msg));
     // this.openai = new OpenAI({
     //   apiKey: process.env.OPENAI_API_KEY,
@@ -105,6 +105,8 @@ export class BotTeleService {
   }
 
   async handleMessage(msg: TelegramBot.Message) {
+    console.log(msg);
+    
     const {
       text,
       photo,
@@ -134,7 +136,7 @@ export class BotTeleService {
       }
     }
 
-    if (photo && chatId === this.teleAdminId) {
+    if (photo) {
       try {
         const fileId = photo[photo.length - 1].file_id;
         const filePath = await this.bot.getFile(fileId).then((file) => file.file_path);

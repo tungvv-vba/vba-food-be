@@ -1,9 +1,9 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { UserLoginDto, UserRegisterDto } from "src/user/dtos/user.dto";
 import { UserService } from "src/user/user.service";
-import { ForgetPasswordDto, ResetPasswordDto } from "./auth.dto";
+import { ForgetPasswordDto, RefreshTokenDto, ResetPasswordDto } from "./auth.dto";
 import { MailerService } from "@nestjs-modules/mailer";
 import { ConfigService } from "@nestjs/config";
 
@@ -30,9 +30,20 @@ export class AuthService {
         username: user.username,
       });
 
+      const refreshToken = await this.jwtService.signAsync(
+        {
+          sub: user.id,
+          username: user.username,
+        },
+        {
+          expiresIn: "1y",
+        },
+      );
+
       return {
         user,
         accessToken,
+        refreshToken,
       };
     }
 
@@ -61,7 +72,40 @@ export class AuthService {
     };
   }
 
-  async refresh(body) {}
+  async refresh(body: RefreshTokenDto) {
+    if(!body.refreshToken) {
+      throw new UnauthorizedException();
+    }
+    const decoded = await this.jwtService.verifyAsync(body.refreshToken, {
+      secret: this.configService.getOrThrow("JWT_SECRET"),
+    });
+
+    const user = await this.userService.findOne({ username: decoded.username });
+    if (!user) {
+      throw new UnauthorizedException("User not found");
+    }
+
+    const accessToken = await this.jwtService.signAsync({
+      sub: user.id,
+      username: user.username,
+    });
+
+    const refreshToken = await this.jwtService.signAsync(
+      {
+        sub: user.id,
+        username: user.username,
+      },
+      {
+        expiresIn: "1y",
+      },
+    );
+
+    return {
+      accessToken,
+      refreshToken,
+      user,
+    };
+  }
 
   async forgetPassword({ email }: ForgetPasswordDto) {
     const user = await this.userService.findOne({ email });

@@ -2,16 +2,20 @@ import { ClassSerializerInterceptor, ValidationPipe } from "@nestjs/common";
 import { NestFactory, Reflector } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import * as cookieParser from 'cookie-parser';
 import { join } from "path";
 import { AppModule } from "./app.module";
 import { PORT } from "./constants";
-
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useStaticAssets(join(__dirname, "..", "uploads"));
-  app.enableCors();
+  app.enableCors({
+    credentials: true,
+    origin: process.env.FRONT_END_URL,
+  });
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.use(cookieParser());
 
   const config = new DocumentBuilder()
     .setTitle("VBA API Documentation")

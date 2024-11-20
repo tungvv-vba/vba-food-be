@@ -49,6 +49,9 @@ export class OrderService {
     if (order.userId !== currentUser.id) {
       throw new BadRequestException("Không thể chỉnh sửa order của người khác");
     }
+    if (newOrder.isPaid) {
+      throw new BadRequestException("Dừng lại ngay! Chỉ admin mới có quyền update bạn đã trả tiền");
+    }
     return this.orderRepository.update(id, newOrder);
   }
 
