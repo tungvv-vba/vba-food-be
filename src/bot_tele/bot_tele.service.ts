@@ -53,8 +53,9 @@ export class BotTeleService {
     private notifyService: NotifyService,
   ) {
     this.teleAdminId = configService.getOrThrow("TELEGRAM_ADMIN_ID");
-    this.bot = new TelegramBot(configService.get("TELEGRAM_BOT_TOKEN"));
-    this.bot.on("message", (msg) => this.handleMessage(msg));
+    this.bot = new TelegramBot(configService.get("TELEGRAM_BOT_TOKEN"), { polling: true });
+
+    // this.bot.on("message", (msg) => this.handleMessage(msg));
     // this.openai = new OpenAI({
     //   apiKey: process.env.OPENAI_API_KEY,
     // });
@@ -67,41 +68,6 @@ export class BotTeleService {
     //   ],
     // });
     // this.docs = google.docs({ version: "v1", auth });
-    // this.bot.on("message", async (msg) => {
-    //   console.log(msg);
-    //   const chatId = msg.chat.id;
-    //   const text = msg.text;
-    //   if (text) {
-    //     try {
-    //       const botResponse = await this.getResponse(text);
-    //       console.log(botResponse);
-    //       const badWords = ["ngu", "óc", "chó", "đm", "địt", "cặc", "lồn", "đéo"];
-    //       const hiwords = ["hello", "chào", "xin chào", "helo"];
-    //       const arrAnimationBad = [
-    //         "CAACAgUAAxkBAAICBGaxmTM5pVq3ZtDKKrguateqJH3kAAIMAAPsOSEfPu0HqTWDQHc1BA",
-    //         "CgACAgQAAxkBAAMdZrHtCr4c5wwQ2RIM04VEKjJFKowAAgwDAAKyQAxTZn3wIGfbZU01BA",
-    //         "CgACAgQAAxkBAAMeZrHtO_up5ux4edTQ9yGgosLL3acAAggDAALVGw1TJYtdAbytVN01BA",
-    //         "CAACAgUAAxkBAAMfZrHtTiYkU74f563poSyj6I4oDF0AAicEAAKp8JBVgB5-8nvYGdQ1BA",
-    //       ];
-    //    if (badWords?.some((word) => text.includes(word))) {
-    //         await this.bot.sendAnimation(
-    //           chatId,
-    //           arrAnimationBad[Math.floor(Math.random() * arrAnimationBad.length)],
-    //         );
-    //       } else if (hiwords?.some((word) => text.includes(word))) {
-    //         await this.bot.sendAnimation(
-    //           chatId,
-    //           "CAACAgQAAxkBAAIDKGa5kDEvdPqM-bNYmokKFZrxmIekAAKlEgAC8j5oUK6XKhg4oPDANQQ",
-    //         );
-    //       } else {
-    //         await this.sendMessage(chatId, botResponse);
-    //       }
-    //       await this.saveMessageToGoogleDocs(msg);
-    //     } catch (error) {
-    //       this.logger.error("Error responding to message:", error);
-    //     }
-    //   }
-    // });
   }
 
   async handleMessage(msg: TelegramBot.Message) {
