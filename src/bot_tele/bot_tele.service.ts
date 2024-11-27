@@ -53,7 +53,7 @@ export class BotTeleService {
     private notifyService: NotifyService,
   ) {
     this.teleAdminId = configService.getOrThrow("TELEGRAM_ADMIN_ID");
-    this.bot = new TelegramBot(configService.get("TELEGRAM_BOT_TOKEN"));
+    this.bot = new TelegramBot(configService.get("TELEGRAM_BOT_TOKEN"), { polling: true });
     this.bot.on("message", (msg) => this.handleMessage(msg));
     // this.openai = new OpenAI({
     //   apiKey: process.env.OPENAI_API_KEY,
@@ -105,19 +105,19 @@ export class BotTeleService {
   }
 
   async handleMessage(msg: TelegramBot.Message) {
-    console.log(msg);
-
     const {
       text,
       photo,
       chat: { id: chatId },
     } = msg;
 
-    if (text === "/notify" || text === "/notify@VBA_FOOD_BOT") {
+    const isAdmin = chatId === this.teleAdminId;
+
+    if (text === "/notify" || text === "/notify@VBA_FOOD_BOT" && isAdmin) {
       await this.notifyService.notifyNewFood();
     }
 
-    if (text == "/weather" || text == "/weather@VBA_FOOD_BOT") {
+    if (text == "/weather" || text == "/weather@VBA_FOOD_BOT" && isAdmin) {
       const city = "Hanoi";
       const apiKey = this.configService.get("WEATHERSTACK_API_KEY");
       const weatherUrl = `http://api.weatherstack.com/current?access_key=${apiKey}&query=${city}`;
@@ -136,25 +136,27 @@ export class BotTeleService {
       }
     }
 
-    try {
-      const fileId = photo[photo.length - 1].file_id;
-      const filePath = await this.bot.getFile(fileId).then((file) => file.file_path);
+    if (photo) {
+      try {
+        const fileId = photo[photo.length - 1].file_id;
+        const filePath = await this.bot.getFile(fileId).then((file) => file.file_path);
 
-      const fileUrl = `https://api.telegram.org/file/bot${this.configService.get("TELEGRAM_BOT_TOKEN")}/${filePath}`;
-      const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
-      const buffer = Buffer.from(response.data, "binary");
+        const fileUrl = `https://api.telegram.org/file/bot${this.configService.get("TELEGRAM_BOT_TOKEN")}/${filePath}`;
+        const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
+        const buffer = Buffer.from(response.data, "binary");
 
-      const file: Partial<Express.Multer.File> = {
-        buffer,
-        originalname: "vba-food.jpg",
-        mimetype: "image/jpg",
-      };
+        const file: Partial<Express.Multer.File> = {
+          buffer,
+          originalname: "vba-food.jpg",
+          mimetype: "image/jpg",
+        };
 
-      await this.menuImageService.create([file]);
+        await this.menuImageService.create([file]);
 
-      this.sendMessage(msg.chat.id, "Upload ảnh thành công!");
-    } catch (error) {
-      this.sendMessage(msg.chat.id, "Upload ảnh thất bại!");
+        this.sendMessage(msg.chat.id, "Upload ảnh thành công!");
+      } catch (error) {
+        this.sendMessage(msg.chat.id, "Upload ảnh thất bại!");
+      }
     }
   }
 
